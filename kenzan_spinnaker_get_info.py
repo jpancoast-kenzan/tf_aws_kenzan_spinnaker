@@ -1,16 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-#import signal
-#import boto.ec2
-#import operator
-#import getopt
 import re
-#import yaml
-#import os
-#import itertools
-#import shutil
-
 import pprint
 
 try:
