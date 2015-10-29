@@ -1,18 +1,5 @@
-
 {
   "variable": {
-    "azs": {
-        "description": "AZs per region",
-       "default": {
-           "us-west-2": "a:b:c"
-        }
-    },
-    "az_counts": {
-        "description": "AZ counts per region",
-       "default": {
-           "us-west-2": "3"
-        }
-    },
     "all_amis": {
       "description": "The AMI to use",
       "default": {

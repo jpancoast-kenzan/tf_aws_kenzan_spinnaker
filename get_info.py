@@ -10,9 +10,15 @@ import re
 #import os
 #import itertools
 #import shutil
-import boto.ec2
 
 import pprint
+
+try:
+    import boto.ec2
+except ImportError, e:
+    print "Missing boto module.  Install with: sudo pip install boto"
+    print "If you don't have pip, do this first: sudo easy_install pip"
+    exit( 2 )
 
 try:
     import requests
@@ -50,6 +56,7 @@ def main(argv):
     pp.pprint(ubuntu_amis)
     '''
 
+    
     conn = boto.ec2.connect_to_region("us-east-1")
 
     regions = conn.get_all_regions()
