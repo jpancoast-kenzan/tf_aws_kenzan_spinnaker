@@ -3,6 +3,7 @@
 import sys
 import re
 import pprint
+import os
 
 try:
     import boto.ec2
@@ -33,6 +34,8 @@ def main(argv):
 
     variables_file = "variables.tf.json"
 
+    data_error = False
+
     data = {}    
     zone_data = {}
     zone_count_data = {}
@@ -45,9 +48,7 @@ def main(argv):
 
 
     data['variable']['azs']['description'] = "AZs per region"
-
     data['variable']['az_counts']['description'] = "AZ counts per region"
-
     data['variable']['all_amis']['description'] = "Ubuntu AMIs"
     
 
@@ -104,6 +105,38 @@ def main(argv):
     
     data['variable']['azs']['default'] = zone_data
     data['variable']['az_counts']['default'] = zone_count_data
+
+    '''
+    Check to make sure all parts have some data in them
+    
+    Things to check:
+        data['variable']['az_counts']['default'] has more than 1 entry
+        data['variable']['azs']['default'] has more than 1 entry
+        data['variable']['all_amis']['default']
+    '''
+    
+    data['variable']['azs']['default'] = {}
+    data['variable']['all_amis']['default'] = {}
+
+    if len(data['variable']['az_counts']['default'].keys()) < 1 or \
+        len(data['variable']['azs']['default'].keys()) < 1:
+
+        print "WARNING: NO AZ DATA"
+        data_error = True
+
+
+    if len(data['variable']['all_amis']['default'].keys()) < 1:
+        print "WARNING: NO AMI DATA"
+        data_error = True
+
+
+    if data_error:
+        if os.path.isfile(variables_file):
+            #exit status 1 means there was a data error, but the variables file exists, so it's probably OK to continue.
+            sys.exit(1)
+        else:
+            #exit status 2 means there was a data error AND the variables file DOES NOT EXIST, so it is NOT OK to continue
+            sys.exit(2)
 
     f = open(variables_file, 'w')
 
