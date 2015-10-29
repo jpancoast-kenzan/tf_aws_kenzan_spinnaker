@@ -46,10 +46,10 @@ output "ami_id" {
 #	}
 #}
 
-#output "azs_per_region" {
-#	value = "${lookup(var.azs, var.region)}"
-#}
-#
-#output "az_counts_per_region" {
-#	value = "${lookup(var.az_counts, var.region)}"
-#}
+output "azs_per_region" {
+	value = "${lookup(var.azs, var.region)}"
+}
+
+output "az_counts_per_region" {
+	value = "${lookup(var.az_counts, var.region)}"
+}
