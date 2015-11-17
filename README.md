@@ -1,7 +1,9 @@
-tf_aws_ubuntu_ami
+tf_aws_kenzan_spinnaker
 =================
 
-Terraform module to get the current set of publicly available ubuntu AMIs.
+Terraform module to get the current set of publicly available ubuntu AMIs, the number of AZ's in each aws region, and available AZ's for that region.
+
+This module started off based on https://github.com/terraform-community-modules/tf_aws_ubuntu_ami, but I re-wrote everything in Python and added a few things.
 
 This module grabs all of the AMIs listed at:
 
@@ -20,48 +22,26 @@ and then looks up the one you want given the input variables
 ## Outputs
 
   * ami_id
+  * azs_per_region
+  * az_counts_per_region
 
 ## Example use
 
-    module "ami" {
-      source = "github.com/terraform-community-modules/tf_aws_ubuntu_ami"
-      region = "eu-central-1"
+    module "tf_aws_kenzan_spinnaker" {
+      source = "github.com/kenzanlabs/tf_aws_kenzan_spinnaker"
+      region = "${var.region}"
       distribution = "trusty"
       architecture = "amd64"
       virttype = "hvm"
-      storagetype = "instance-store"
+      storagetype = "ebs-ssd"
     }
 
     resource "aws_instance" "web" {
-      ami = "${module.ami.ami_id}"
+      ami = "${module.tf_aws_kenzan_spinnaker.ami_id}"
       instance_type = "m3.8xlarge"
     }
 
-## Short forms
-
-This module also supports a couple of shortcuts for common configurations, where you
-know the _instance_type_ you'd like to use, but don't want to bother looking up
-the _virttype_
-
-## ebs
-
-    module "ami" {
-      source = "github.com/terraform-community-modules/tf_aws_ubuntu_ami/ebs"
-      region = "eu-central-1"
-      distribution = "trusty"
-      instance_type = "m3.large"
-    }
-
-## instance-store
-
-    module "ami" {
-      source = "github.com/terraform-community-modules/tf_aws_ubuntu_ami/instance-store"
-      region = "eu-central-1"
-      distribution = "trusty"
-      instance_type = "m3.large"
-    }  
-
-## License
+    availability_zone    = "${var.region}${element(split (":", "${module.tf_aws_kenzan_spinnaker.azs_per_region}"), count.index%module.tf_aws_kenzan_spinnaker.az_counts_per_region)}"
 
 Apache2 - see the included LICENSE file for more details.
 
