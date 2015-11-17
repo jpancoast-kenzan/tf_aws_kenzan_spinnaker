@@ -1,9 +1,9 @@
 tf_aws_kenzan_spinnaker
 =================
 
-Terraform module to get the current set of publicly available ubuntu AMIs, the number of AZ's in each aws region, and available AZ's for that region.
+Terraform module to get the current set of publicly available ubuntu AMIs in AWS, the number of AZ's in each aws region, and available AZ's for that region.
 
-This module started off based on https://github.com/terraform-community-modules/tf_aws_ubuntu_ami, but I re-wrote everything in Python and added a few things.
+This module started off based on https://github.com/terraform-community-modules/tf_aws_ubuntu_ami, everything was re-written in Python and AZ letters and AZ counts were added.
 
 This module grabs all of the AMIs listed at:
 
