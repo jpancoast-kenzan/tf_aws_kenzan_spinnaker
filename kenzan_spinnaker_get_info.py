@@ -41,7 +41,7 @@ def parse_spinnaker_amis():
 
             region = values[1]
             instance_type = values[4]
-            ami_id = values[5]
+            ami_id = re.search('.*\[(ami-[^<]*)\].*', values[5]).group(1)
 
             spinnaker_amis[region + '-' + instance_type.lower()] = ami_id
 
@@ -54,8 +54,7 @@ def main(argv):
     variables_file = "variables.tf.json"
 
     spinnaker_amis = parse_spinnaker_amis()
-#    pp.pprint(spinnaker_amis)
-#    exit(1)
+    
     data_error = False
 
     data = {}
@@ -121,24 +120,6 @@ def main(argv):
 
     data['variable']['azs']['default'] = zone_data
     data['variable']['az_counts']['default'] = zone_count_data
-
-    '''
-    "az_counts": {
-            "default": {
-                "ap-northeast-1": "3", 
-                "ap-southeast-1": "2", 
-                "ap-southeast-2": "2", 
-                "eu-central-1": "2", 
-                "eu-west-1": "3", 
-                "sa-east-1": "3", 
-                "us-east-1": "5", 
-                "us-west-1": "3", 
-                "us-west-2": "3"
-            }, 
-            "description": "AZ counts per region"
-        }, 
-    '''
-
     data['variable']['spinnaker_amis']['default'] = spinnaker_amis
     
 
