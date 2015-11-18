@@ -27,6 +27,25 @@ except ImportError, e:
     exit(2)
 
 ubuntu_image_url = "http://cloud-images.ubuntu.com/locator/ec2/releasesTable"
+spinnaker_image_url = "https://raw.githubusercontent.com/spinnaker/spinnaker.github.io/master/online_docs/quick_ref/ami_table.md"
+
+def parse_spinnaker_amis():
+    r_spinnaker_images = requests.get(spinnaker_image_url)
+
+    spinnaker_amis = {}
+
+    for line in r_spinnaker_images.text.split('\n'):
+        if re.match('.*ami-.*', line):
+            line = re.sub('\s+', '', line)
+            values = line.split('|')
+
+            region = values[1]
+            instance_type = values[4]
+            ami_id = values[5]
+
+            spinnaker_amis[region + '-' + instance_type.lower()] = ami_id
+
+    return spinnaker_amis
 
 
 def main(argv):
@@ -34,6 +53,9 @@ def main(argv):
 
     variables_file = "variables.tf.json"
 
+    spinnaker_amis = parse_spinnaker_amis()
+#    pp.pprint(spinnaker_amis)
+#    exit(1)
     data_error = False
 
     data = {}
@@ -42,13 +64,16 @@ def main(argv):
     ami_data = {}
 
     data['variable'] = {}
+
     data['variable']['azs'] = {}
     data['variable']['az_counts'] = {}
     data['variable']['all_amis'] = {}
+    data['variable']['spinnaker_amis'] = {}
 
     data['variable']['azs']['description'] = "AZs per region"
     data['variable']['az_counts']['description'] = "AZ counts per region"
     data['variable']['all_amis']['description'] = "Ubuntu AMIs"
+    data['variable']['spinnaker_amis']['description'] = "Spinnaker AMIs"
 
     r_ubuntu = requests.get(ubuntu_image_url)
 
@@ -98,12 +123,34 @@ def main(argv):
     data['variable']['az_counts']['default'] = zone_count_data
 
     '''
+    "az_counts": {
+            "default": {
+                "ap-northeast-1": "3", 
+                "ap-southeast-1": "2", 
+                "ap-southeast-2": "2", 
+                "eu-central-1": "2", 
+                "eu-west-1": "3", 
+                "sa-east-1": "3", 
+                "us-east-1": "5", 
+                "us-west-1": "3", 
+                "us-west-2": "3"
+            }, 
+            "description": "AZ counts per region"
+        }, 
+    '''
+
+    data['variable']['spinnaker_amis']['default'] = spinnaker_amis
+    
+
+
+    '''
     Check to make sure all parts have some data in them
     
     Things to check:
         data['variable']['az_counts']['default'] has more than 1 entry
         data['variable']['azs']['default'] has more than 1 entry
         data['variable']['all_amis']['default']
+        data['variable']['spinnaker_amis']['default']
     '''
     if len(data['variable']['az_counts']['default'].keys()) < 1 or \
             len(data['variable']['azs']['default'].keys()) < 1:
@@ -112,7 +159,11 @@ def main(argv):
         data_error = True
 
     if len(data['variable']['all_amis']['default'].keys()) < 1:
-        print "WARNING: NO AMI DATA"
+        print "WARNING: NO UBUNTU AMI DATA"
+        data_error = True
+
+    if len(data['variable']['spinnaker_amis']['default'].keys()) < 1:
+        print "WARING: NO SPINNAKER AMI DATA"
         data_error = True
 
     if data_error:

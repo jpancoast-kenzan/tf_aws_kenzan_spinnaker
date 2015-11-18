@@ -12,6 +12,10 @@ output "ami_id" {
     value = "${lookup(var.all_amis, format(\"%s-%s-%s-%s-%s\", var.region, var.distribution, var.architecture, var.virttype, var.storagetype))}"
 }
 
+output "spinnaker_ami_id" {
+	value = "${lookup(var.spinnaker_amis, format(\"%s-%s\", var.region, var.virttype))}"
+}
+
 output "azs_per_region" {
 	value = "${lookup(var.azs, var.region)}"
 }
