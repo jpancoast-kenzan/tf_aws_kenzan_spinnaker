@@ -66,12 +66,12 @@ def main(argv):
 
     data['variable']['azs'] = {}
     data['variable']['az_counts'] = {}
-    data['variable']['all_amis'] = {}
+    data['variable']['ubuntu_amis'] = {}
     data['variable']['spinnaker_amis'] = {}
 
     data['variable']['azs']['description'] = "AZs per region"
     data['variable']['az_counts']['description'] = "AZ counts per region"
-    data['variable']['all_amis']['description'] = "Ubuntu AMIs"
+    data['variable']['ubuntu_amis']['description'] = "Ubuntu AMIs"
     data['variable']['spinnaker_amis']['description'] = "Spinnaker AMIs"
 
     r_ubuntu = requests.get(ubuntu_image_url)
@@ -98,7 +98,7 @@ def main(argv):
 
         ami_data[key] = ami_id
 
-    data['variable']['all_amis']['default'] = ami_data
+    data['variable']['ubuntu_amis']['default'] = ami_data
 
     for region in regions:
         az_string = ''
@@ -130,7 +130,7 @@ def main(argv):
     Things to check:
         data['variable']['az_counts']['default'] has more than 1 entry
         data['variable']['azs']['default'] has more than 1 entry
-        data['variable']['all_amis']['default']
+        data['variable']['ubuntu_amis']['default']
         data['variable']['spinnaker_amis']['default']
     '''
     if len(data['variable']['az_counts']['default'].keys()) < 1 or \
@@ -139,7 +139,7 @@ def main(argv):
         print "WARNING: NO AZ DATA"
         data_error = True
 
-    if len(data['variable']['all_amis']['default'].keys()) < 1:
+    if len(data['variable']['ubuntu_amis']['default'].keys()) < 1:
         print "WARNING: NO UBUNTU AMI DATA"
         data_error = True
 
