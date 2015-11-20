@@ -1,16 +1,21 @@
 tf_aws_kenzan_spinnaker
 =================
 
-Terraform module to get the current set of publicly available ubuntu AMIs in AWS, the number of AZ's in each aws region, and available AZ's for that region.
+Terraform module to get the current set of publicly available ubuntu AMIs in AWS, the publically available Spinnaker AMIs, the number of AZ's in each aws region, and available AZ's for that region.
 
 This module started off based on https://github.com/terraform-community-modules/tf_aws_ubuntu_ami, everything was re-written in Python and AZ letters and AZ counts were added.
 
-This module grabs all of the AMIs listed at:
+This module grabs all of the Ubuntu AMIs listed at:
 
     http://cloud-images.ubuntu.com/locator/ec2/
 
 and then looks up the one you want given the input variables
 
+It also grabs all the Spinnaker AMIs listed at:
+
+    https://raw.githubusercontent.com/spinnaker/spinnaker.github.io/master/online_docs/quick_ref/ami_table.md
+
+    
 ## Input variables
 
   * region - E.g. eu-central-1
@@ -36,8 +41,13 @@ and then looks up the one you want given the input variables
       storagetype = "ebs-ssd"
     }
 
-    resource "aws_instance" "web" {
+    resource "aws_instance" "ubuntu" {
       ami = "${module.tf_aws_kenzan_spinnaker.ami_id}"
+      instance_type = "m3.8xlarge"
+    }
+
+    resource "aws_instance" "spinnaker" {
+      ami = "${module.tf_aws_kenzan_spinnaker.spinnaker_ami_id}"
       instance_type = "m3.8xlarge"
     }
 
